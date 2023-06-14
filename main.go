@@ -12,8 +12,6 @@ import (
 	"github.com/diomedd/twitter-go/handlers"
 	"github.com/diomedd/twitter-go/models"
 	"github.com/diomedd/twitter-go/secretmanager"
-	//"github.com/aws/aws-sdk-go-v2/aws"
-	//"github.com/aws/aws-sdk-go-v2/service/secretsmanager"
 )
 
 func main() {
@@ -87,6 +85,7 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 				},
 			}
 			return res, nil
+
 		} else {
 			return restAPI.CustomResp, nil
 		}
@@ -112,5 +111,5 @@ func ValidoParametros() bool {
 		return traeParametro
 	}
 
-	return true
+	return traeParametro
 }
