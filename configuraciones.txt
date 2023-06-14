@@ -1,0 +1,8 @@
+git@github.com:diomedd/twitter-go.git
+
+mongo
+diomedd/Lucia2344
+mongodb+srv://<username>:<password>@twitter.g2topex.mongodb.net/
+
+aws
+diomedd@gmail.com/Lucia2344
