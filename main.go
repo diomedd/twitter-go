@@ -30,7 +30,7 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 	if !ValidoParametros() {
 		res = &events.APIGatewayProxyResponse{
 			StatusCode: 400,
-			Body:       "error en las variables de entorno, deben incliuir 'SecretName', 'BacketName', 'UrlPrefix'",
+			Body:       "error en las variables de entorno, deben incliuir 'SecretName', 'BucketName', 'UrlPrefix'",
 			Headers: map[string]string{
 				"Content-Type": "application-json",
 			},
@@ -51,7 +51,7 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 		return res, nil
 	}
 
-	path := strings.Replace(request.PathParameters["twitterdd"], os.Getenv("UrlPrefix"), "", -1)
+	path := strings.Replace(request.PathParameters["twittergo"], os.Getenv("UrlPrefix"), "", -1)
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("path"), path)
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("method"), request.HTTPMethod)
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("user"), SecretModels.Username)
@@ -95,21 +95,17 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 }
 
 func ValidoParametros() bool {
-
 	_, traeParametro := os.LookupEnv("SecretName")
 	if !traeParametro {
 		return traeParametro
 	}
-
 	_, traeParametro = os.LookupEnv("BucketName")
 	if !traeParametro {
 		return traeParametro
 	}
-
 	_, traeParametro = os.LookupEnv("UrlPrefix")
 	if !traeParametro {
 		return traeParametro
 	}
-
 	return traeParametro
 }
