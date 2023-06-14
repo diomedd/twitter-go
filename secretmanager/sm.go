@@ -10,7 +10,7 @@ import (
 	"github.com/diomedd/twitter-go/models"
 )
 
-func GetSecrets(secretName string) (models.Secret, error) {
+func GetSecret(secretName string) (models.Secret, error) {
 
 	var datosSecret models.Secret
 	fmt.Println("> pido secreto " + secretName)

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"strings"
 
@@ -14,84 +15,70 @@ import (
 	"github.com/diomedd/twitter-go/secretmanager"
 )
 
-func main() {
-
-	lambda.Start(EjecutoLambda)
-	//awsgo.InicializoAWS()
-
-}
-
 func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 
 	var res *events.APIGatewayProxyResponse
-
 	awsgo.InicializoAWS()
 
 	if !ValidoParametros() {
 		res = &events.APIGatewayProxyResponse{
 			StatusCode: 400,
-			Body:       "error en las variables de entorno, deben incliuir 'SecretName', 'BucketName', 'UrlPrefix'",
+			Body:       "Error en las variables de entorno. deben incluir 'SecretName', 'BucketName",
 			Headers: map[string]string{
-				"Content-Type": "application-json",
+				"Content-Type": "application/json",
 			},
 		}
 		return res, nil
 	}
 
-	SecretModels, err := secretmanager.GetSecrets(os.Getenv("SecretName"))
-
+	SecretModel, err := secretmanager.GetSecret(os.Getenv("SecretName"))
 	if err != nil {
 		res = &events.APIGatewayProxyResponse{
 			StatusCode: 400,
-			Body:       "error en la lectura de secret " + err.Error(),
+			Body:       "Error en la lectura de Secret " + err.Error(),
 			Headers: map[string]string{
-				"Content-Type": "application-json",
+				"Content-Type": "application/json",
 			},
 		}
 		return res, nil
 	}
 
 	path := strings.Replace(request.PathParameters["twittergo"], os.Getenv("UrlPrefix"), "", -1)
+
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("path"), path)
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("method"), request.HTTPMethod)
-	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("user"), SecretModels.Username)
-	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("password"), SecretModels.Password)
-	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("host"), SecretModels.Host)
-	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("database"), SecretModels.DataBase)
-	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("jwtSign"), SecretModels.JWTSign)
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("user"), SecretModel.Username)
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("password"), SecretModel.Password)
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("host"), SecretModel.Host)
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("database"), SecretModel.DataBase)
+	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("jwtSign"), SecretModel.JWTSign)
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("body"), request.Body)
 	awsgo.Ctx = context.WithValue(awsgo.Ctx, models.Key("bucketName"), os.Getenv("BucketName"))
 
-	//chequeo con con la bd
-	err = bd.ConectarBD(awsgo.Ctx)
-	if err != nil {
+	// Chequeo Conexión a la BD o Conecto la BD
+
+	bd.ConectarBD(awsgo.Ctx)
+
+	respAPI := handlers.Manejadores(awsgo.Ctx, request)
+
+	fmt.Println("Sali de Manejadores")
+	if respAPI.CustomResp == nil {
+		headersResp := map[string]string{
+			"Content-Type": "application/json",
+		}
 		res = &events.APIGatewayProxyResponse{
-			StatusCode: 500,
-			Body:       "error conectando en la base de datos " + err.Error(),
-			Headers: map[string]string{
-				"Content-Type": "aplication-json",
-			},
+			StatusCode: respAPI.Status,
+			Body:       string(respAPI.Message),
+			Headers:    headersResp,
 		}
 		return res, nil
+	} else {
+		return respAPI.CustomResp, nil
 	}
-	restAPI := handlers.Manejadores(awsgo.Ctx, request)
-	if restAPI.CustomResp == nil {
-		if err != nil {
-			res = &events.APIGatewayProxyResponse{
-				StatusCode: restAPI.Status,
-				Body:       restAPI.Message,
-				Headers: map[string]string{
-					"Content-Type": "aplication-json",
-				},
-			}
-			return res, nil
+}
 
-		} else {
-			return restAPI.CustomResp, nil
-		}
-
-	}
-	return res, nil
+func main() {
+	lambda.Start(EjecutoLambda)
 }
 
 func ValidoParametros() bool {
