@@ -11,7 +11,7 @@ func ChequeoYaExisteUsuario(email string) (models.Usuario, bool, string) {
 
 	ctx := context.TODO()
 
-	db := MongCN.Database(DatabaseName)
+	db := MongoCN.Database(DatabaseName)
 	col := db.Collection("usuarios")
 
 	condition := bson.M{"email": email}
