@@ -15,6 +15,10 @@ import (
 	"github.com/diomedd/twitter-go/secretmanager"
 )
 
+func main() {
+	lambda.Start(EjecutoLambda)
+}
+
 func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
 
 	var res *events.APIGatewayProxyResponse
@@ -77,16 +81,12 @@ func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (
 	}
 }
 
-func main() {
-	lambda.Start(EjecutoLambda)
-}
-
 func ValidoParametros() bool {
 	_, traeParametro := os.LookupEnv("SecretName")
 	if !traeParametro {
 		return traeParametro
 	}
-	_, traeParametro = os.LookupEnv("BucketName")
+	_, traeParametro = os.LookupEnv("BacketName")
 	if !traeParametro {
 		return traeParametro
 	}
