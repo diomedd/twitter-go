@@ -11,12 +11,11 @@ import (
 
 /*Registro es la funcion para crear en la BD el registro de usuario */
 func Registro(ctx context.Context) models.RestApi {
-
 	var t models.Usuario
 	var r models.RestApi
 	r.Status = 400
 
-	fmt.Println("Entré a Registro")
+	fmt.Println("Entre a Registro")
 
 	body := ctx.Value(models.Key("body")).(string)
 	err := json.Unmarshal([]byte(body), &t)
@@ -27,7 +26,7 @@ func Registro(ctx context.Context) models.RestApi {
 	}
 
 	if len(t.Email) == 0 {
-		r.Message = "El email de usuario es requerido"
+		r.Message = "Debe especificar el Email"
 		fmt.Println(r.Message)
 		return r
 	}
@@ -39,14 +38,14 @@ func Registro(ctx context.Context) models.RestApi {
 
 	_, encontrado, _ := bd.ChequeoYaExisteUsuario(t.Email)
 	if encontrado {
-		r.Message = "Ya existe un usuario registrado con ese email"
+		r.Message = "Ya existe un usuario registrado con es email"
 		fmt.Println(r.Message)
 		return r
 	}
 
 	_, status, err := bd.InsertoRegistro(t)
 	if err != nil {
-		r.Message = "Ocurrió un error al intentar realizar el registro de usuario " + err.Error()
+		r.Message = "Ocurrió un error al intentar realizar el registro del usuario " + err.Error()
 		fmt.Println(r.Message)
 		return r
 	}
