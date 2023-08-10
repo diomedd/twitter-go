@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	"github.com/aws/aws-lambda-go/events"
-	lambda "github.com/aws/aws-lambda-go/lambda"
 	"github.com/diomedd/twitter-go/awsgo"
 	"github.com/diomedd/twitter-go/bd"
 	"github.com/diomedd/twitter-go/handlers"
@@ -16,7 +15,31 @@ import (
 )
 
 func main() {
-	lambda.Start(EjecutoLambda)
+
+	//lambda.Start(EjecutoLambda)
+	//bd.BaseConectada()
+
+	/*	clientOptions := options.Client().ApplyURI("mongodb+srv://ddiomede:Pinguin.2021@twitter.urcagqz.mongodb.net/")
+		client, err := mongo.Connect(context.Background(), clientOptions)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Comprobar la conexión
+		err = client.Ping(context.Background(), nil)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Println("Conexión exitosa a MongoDB")
+
+		// Cerrar la conexión al finalizar
+		defer func() {
+			if err := client.Disconnect(context.Background()); err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println("Conexión cerrada correctamente")
+		}()*/
 }
 
 func EjecutoLambda(ctx context.Context, request events.APIGatewayProxyRequest) (*events.APIGatewayProxyResponse, error) {
@@ -86,7 +109,7 @@ func ValidoParametros() bool {
 	if !traeParametro {
 		return traeParametro
 	}
-	_, traeParametro = os.LookupEnv("BacketName")
+	_, traeParametro = os.LookupEnv("BucketName")
 	if !traeParametro {
 		return traeParametro
 	}

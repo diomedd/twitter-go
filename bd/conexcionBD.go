@@ -37,7 +37,7 @@ func ConectarBD(ctx context.Context) error {
 	return nil
 }
 
-func BaseConectada() bool {
+/*func BaseConectada() bool {
 	err := MongoCN.Ping(context.TODO(), nil)
 	return err == nil
-}
+}*/
