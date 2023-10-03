@@ -33,6 +33,8 @@ func Manejadores(ctx context.Context, request events.APIGatewayProxyRequest) mod
 		case "registro":
 			return routers.Registro(ctx)
 
+		case "login":
+			return routers.Login(ctx)
 		}
 
 	case "GET":
